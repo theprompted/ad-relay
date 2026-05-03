@@ -1,10 +1,10 @@
-# The Relay
+# The Ad Relay
 
 Autonomous image ad relay for Claude Code. Point it at a funnel, walk away. Come back to a folder of ads.
 
 ## How it works
 
-The relay runs as a sequence of legs. Each leg is a fresh Claude instance with clean context — no baggage from previous legs. It reads the baton (a file), runs its job, writes its output, hands off, and exits. The next instance picks up.
+The ad relay runs as a sequence of legs. Each leg is a fresh Claude instance with clean context — no baggage from previous legs. It reads the baton (a file), runs its job, writes its output, hands off, and exits. The next instance picks up.
 
 ```
 L1 — Concept Selection    reads funnel → picks formats from swipe file
@@ -26,8 +26,8 @@ The output is a folder of images. No human in the loop after kickoff.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/theprompted/relay.git
-cd relay
+git clone https://github.com/theprompted/ad-relay.git
+cd ad-relay
 
 # 2. Install dependencies
 pip install fal-client
@@ -36,12 +36,12 @@ pip install fal-client
 export FAL_KEY=your_key_here
 
 # 4. Copy the template and configure it
-cp relay.template.json relay.json
+cp ad-relay.template.json ad-relay.json
 ```
 
-Edit `relay.json`:
+Edit `ad-relay.json`:
 - Set `funnel` to your landing page URL
-- Set `outputDir` to an absolute path where outputs should be saved (e.g. `/Users/you/relay-run`)
+- Set `outputDir` to an absolute path where outputs should be saved (e.g. `/Users/you/my-relay-run`)
 - Set `adCount` to how many concepts you want (5 is a good start)
 - Update L1 `acceptanceCriteria` to select the right number of concepts
 - Update L3 target to match
@@ -51,12 +51,12 @@ Edit `relay.json`:
 ```bash
 mkdir -p /your/output/dir/artifacts /your/output/dir/images
 cp generate_images.py /your/output/dir/
-cp RELAY.md /your/output/dir/
-cp relay.json /your/output/dir/
-cd /your/output/dir && bash /path/to/relay/relay.sh 10 2>&1 | tee relay-output.log
+cp AD-RELAY.md /your/output/dir/
+cp ad-relay.json /your/output/dir/
+cd /your/output/dir && bash /path/to/ad-relay/ad-relay.sh 10 2>&1 | tee ad-relay-output.log
 ```
 
-Or use the `/relay-lite` Claude Code skill if you have it installed — it handles setup automatically.
+Or use the `/ad-relay-lite` Claude Code skill if you have it installed — it handles setup automatically.
 
 ## What's in the swipe file
 
@@ -64,7 +64,7 @@ Or use the `/relay-lite` Claude Code skill if you have it installed — it handl
 
 UGC · Testimonial · Native Advertorial · Problem-Agitate · Before/After · Authority · Myth Buster · Us-vs-Them · Pattern Interrupt · Founder · Platform Mimicry · Social Proof · Benefit Callout · Timeline · Objection Handling
 
-The relay uses these as the starting point for concept selection — it picks the formats that best match your specific funnel and avatar, not generic formats.
+The ad relay uses these as the starting point for concept selection — it picks the formats that best match your specific funnel and avatar, not generic formats.
 
 ## Output structure
 
@@ -80,8 +80,8 @@ your-output-dir/
     concept-name-02.png
     ...
   baton.txt
-  relay.json
-  relay-output.log
+  ad-relay.json
+  ad-relay-output.log
 ```
 
 ## The quality gate (L3)

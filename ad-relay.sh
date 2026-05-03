@@ -1,6 +1,6 @@
 #!/bin/bash
-# The Relay — Autonomous multi-leg agent loop
-# Usage: ./relay.sh [max_legs]
+# The Ad Relay — Autonomous multi-leg agent loop
+# Usage: ./ad-relay.sh [max_legs]
 # Each run spawns a fresh Claude instance. That instance runs one leg, hands off, exits.
 # The next instance picks up from the baton.
 
@@ -20,12 +20,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RELAY_FILE="$SCRIPT_DIR/relay.json"
+RELAY_FILE="$SCRIPT_DIR/ad-relay.json"
 BATON_FILE="$SCRIPT_DIR/baton.txt"
 
 if [ ! -f "$RELAY_FILE" ]; then
-  echo "Error: relay.json not found in $SCRIPT_DIR"
-  echo "Copy relay.template.json to relay.json and configure it before running."
+  echo "Error: ad-relay.json not found in $SCRIPT_DIR"
+  echo "Copy ad-relay.template.json to ad-relay.json and configure it before running."
   exit 1
 fi
 
@@ -36,7 +36,7 @@ if [ ! -f "$BATON_FILE" ]; then
   echo "---" >> "$BATON_FILE"
 fi
 
-echo "Starting The Relay — Max legs: $MAX_LEGS"
+echo "Starting The Ad Relay — Max legs: $MAX_LEGS"
 echo "Relay config: $RELAY_FILE"
 echo ""
 
@@ -45,7 +45,7 @@ for i in $(seq 1 $MAX_LEGS); do
   echo "  Leg $i of $MAX_LEGS"
   echo "==============================================================="
 
-  OUTPUT=$(claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/RELAY.md" 2>&1 | tee /dev/stderr) || true
+  OUTPUT=$(claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/AD-RELAY.md" 2>&1 | tee /dev/stderr) || true
 
   if echo "$OUTPUT" | grep -q "RELAY_COMPLETE"; then
     echo ""
