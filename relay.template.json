@@ -1,0 +1,95 @@
+{
+  "projectName": "[Brand] Image Ad Relay",
+  "brandSlug": "[brand-slug]",
+  "description": "Autonomous image ad relay. Point at a funnel, walk away. Four legs: concept selection → image concepts → quality gate → image generation.",
+  "funnel": "[path/to/funnel.html or URL]",
+  "avatar": "[path/to/avatar.md — optional, relay will infer from funnel if absent]",
+  "conceptLibrary": "ad-formats-lite.json",
+  "outputDir": "[path/to/output/dir]",
+  "adCount": 10,
+  "legs": [
+    {
+      "id": "L1",
+      "title": "Concept Selection",
+      "description": "Read the funnel and avatar. Select which concepts from the concept library are the best match for this specific person and this offer. Save the selection with reasoning.",
+      "inputFiles": [
+        "[funnel path]",
+        "[avatar path — if exists]",
+        "[conceptLibrary]"
+      ],
+      "artifactFile": "[outputDir]/artifacts/L1-concept-selection.md",
+      "acceptanceCriteria": [
+        "Read the funnel in full — not a skim",
+        "Read the avatar file if it exists — if not, infer avatar from funnel copy",
+        "Read the concept library — understand all available concepts",
+        "Select 8-12 concepts that match this avatar's psychology and this offer's angle",
+        "For each selected concept: name it, state WHY it fits this avatar specifically (not generically)",
+        "Self-check: does each concept selection reference a specific detail from the funnel or avatar? If any selection is generic ('this concept works for all DTC products'), cut it",
+        "Save as [outputDir]/artifacts/L1-concept-selection.md"
+      ],
+      "priority": 1,
+      "handed_off": false
+    },
+    {
+      "id": "L2",
+      "title": "Image Concepts",
+      "description": "For each selected concept, generate a specific image brief. What does the image show? What is the contradiction? What makes someone pause with no text at all?",
+      "inputFiles": [
+        "[outputDir]/artifacts/L1-concept-selection.md"
+      ],
+      "artifactFile": "[outputDir]/artifacts/L2-image-concepts.md",
+      "acceptanceCriteria": [
+        "Read L1-concept-selection.md — use only the concepts selected there",
+        "For each concept, write one image brief: scene description, what the contradiction is, what emotion or confusion it creates before any text is read",
+        "Briefs must be specific — not 'woman looking frustrated' but 'woman pulling a heavy plastic detergent jug out of her car trunk, straining, while her neighbour carries a small flat envelope with one hand'",
+        "Self-check: does this brief require reading the ad copy to be interesting? If yes — rewrite it. The image must work alone.",
+        "Self-check: is this a stock photo cliché? (smiling person holding product, before/after side-by-side, generic lifestyle shot) If yes — rewrite it.",
+        "Save as [outputDir]/artifacts/L2-image-concepts.md"
+      ],
+      "priority": 2,
+      "handed_off": false
+    },
+    {
+      "id": "L3",
+      "title": "Quality Gate",
+      "description": "Run every image brief through the quality gate. Cut anything that fails. Only what passes gets generated.",
+      "inputFiles": [
+        "[outputDir]/artifacts/L2-image-concepts.md"
+      ],
+      "artifactFile": "[outputDir]/artifacts/L3-approved-concepts.md",
+      "acceptanceCriteria": [
+        "Read L2-image-concepts.md",
+        "For EVERY concept, run all three gate checks and write the result explicitly:",
+        "  Gate 1 — Contradiction check: does this image carry its own contradiction without text? PASS / FAIL",
+        "  Gate 2 — Pause check: would someone stop scrolling on this image with no copy visible? PASS / FAIL + one sentence why",
+        "  Gate 3 — Stock check: does this look like a stock photo or a generic lifestyle image? PASS (looks real/native) / FAIL (looks stock)",
+        "All three gates must PASS for a concept to proceed",
+        "Document every cut with the reason — don't silently drop concepts",
+        "Target: at least 6 concepts pass. If fewer than 6 pass, flag it in baton.txt and proceed with what passed.",
+        "Save approved concepts only to [outputDir]/artifacts/L3-approved-concepts.md"
+      ],
+      "priority": 3,
+      "handed_off": false
+    },
+    {
+      "id": "L4",
+      "title": "Image Generation",
+      "description": "Generate the actual images from approved concepts. Save each image to the output directory.",
+      "inputFiles": [
+        "[outputDir]/artifacts/L3-approved-concepts.md"
+      ],
+      "artifactFile": "[outputDir]/artifacts/L4-generation-log.md",
+      "acceptanceCriteria": [
+        "Read L3-approved-concepts.md — generate images only for concepts that passed all three gates",
+        "For each concept: write a precise image generation prompt (scene, lighting, style, aspect ratio 4:5 for feed)",
+        "Generate each image using the image generation script at [imageGenerationScript]",
+        "Save each image to [outputDir]/images/ with a descriptive filename (concept-name-number.png)",
+        "Log each generation: concept name, prompt used, filename saved, any generation issues",
+        "Self-check: review each generated image — does it match the approved concept? Note any gaps.",
+        "Save generation log to [outputDir]/artifacts/L4-generation-log.md"
+      ],
+      "priority": 4,
+      "handed_off": false
+    }
+  ]
+}
