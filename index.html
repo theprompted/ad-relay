@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Relay — Autonomous Image Ad Generator for Claude Code</title>
+    <style>
+        :root {
+            --bg-page: #F8F8F7;
+            --bg-white: #ffffff;
+            --bg-blue: #EBF9FF;
+            --bg-purple: #F7F1FF;
+            --bg-yellow: #FFFDE7;
+            --bg-green: #E8F5E9;
+            --accent-teal: #53DBC9;
+            --accent-yellow: #FFDE00;
+            --accent-purple: #9D4EDD;
+            --text-black: #000000;
+            --text-dark: #1a1a1a;
+            --text-gray: #4a4a4a;
+            --text-muted: #6b6b6b;
+            --shadow-lg: -0.31rem 0.31rem 0 0 #383838;
+            --shadow-sm: -0.19rem 0.19rem 0 0 #383838;
+            --border: 2px solid black;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background: var(--bg-page);
+            padding: 2rem 1.5rem;
+        }
+
+        .container { max-width: 860px; margin: 0 auto; }
+
+        h1, h2, h3, h4 {
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+            font-weight: 700;
+            color: var(--text-black);
+        }
+
+        h1 { font-size: 2.25rem; line-height: 1.2; }
+        h2 { font-size: 1.35rem; }
+        h3 { font-size: 1.05rem; }
+        h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-gray); }
+
+        p { margin-bottom: 1rem; }
+        p:last-child { margin-bottom: 0; }
+
+        .card {
+            background: var(--bg-white);
+            border: var(--border);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.75rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: var(--border);
+            background: var(--bg-page);
+        }
+
+        .card-content { padding: 1.5rem; }
+
+        .code-block {
+            background: var(--text-dark);
+            color: var(--accent-teal);
+            border: var(--border);
+            padding: 1rem 1.25rem;
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow-sm);
+            white-space: pre-wrap;
+            word-break: break-all;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .copy-hint {
+            font-family: ui-monospace, monospace;
+            font-size: 0.7rem;
+            color: #888;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+        }
+
+        .code-block:hover .copy-hint { color: var(--accent-teal); }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-teal);
+            color: var(--text-black);
+            border: var(--border);
+            box-shadow: var(--shadow-sm);
+            font-family: ui-monospace, monospace;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn:hover { box-shadow: none; transform: translate(-0.19rem, 0.19rem); }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            font-family: ui-monospace, monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            border: var(--border);
+        }
+
+        .tag-free { background: var(--accent-teal); color: var(--text-black); }
+        .tag-lite { background: var(--bg-yellow); color: var(--text-black); }
+
+        .step {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .num-badge {
+            width: 1.75rem;
+            height: 1.75rem;
+            background: var(--text-black);
+            color: var(--accent-teal);
+            font-family: ui-monospace, monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-family: ui-monospace, monospace;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .leg-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .leg-item {
+            border: var(--border);
+            padding: 1rem;
+            background: var(--bg-page);
+        }
+
+        .leg-item.locked {
+            opacity: 0.5;
+        }
+
+        .leg-item.locked .leg-label::after {
+            content: " — FULL VERSION";
+            color: var(--accent-purple);
+            font-size: 0.7rem;
+        }
+
+        .leg-label {
+            font-family: ui-monospace, monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-gray);
+            margin-bottom: 0.35rem;
+        }
+
+        .leg-text {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .divider {
+            border: none;
+            border-top: var(--border);
+            margin: 1.75rem 0;
+        }
+
+        .upgrade-card {
+            background: var(--text-dark);
+            border: var(--border);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.75rem;
+            padding: 2rem;
+            color: #fff;
+        }
+
+        .upgrade-card h2 {
+            color: var(--accent-teal);
+            margin-bottom: 0.75rem;
+        }
+
+        .upgrade-card p { color: #ccc; }
+
+        .upgrade-features {
+            margin: 1.25rem 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .upgrade-features li {
+            color: #ccc;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #333;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .upgrade-features li::before {
+            content: "+";
+            color: var(--accent-teal);
+            font-family: ui-monospace, monospace;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 2rem 0 1rem;
+        }
+
+        .footer a { color: var(--text-muted); }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            h1 { font-size: 1.6rem; }
+            .card-content { padding: 1.25rem; }
+            .leg-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="card">
+        <div class="card-content">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+                <div style="width:3rem;height:3rem;background:var(--accent-teal);border:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">⚡</div>
+                <span class="tag tag-free">FREE</span>
+                <span class="tag tag-lite">LITE</span>
+            </div>
+            <h1>Ad Relay</h1>
+            <p style="color:var(--text-muted);margin-top:0.5rem;font-size:1.1rem;">Autonomous image ad generator for Claude Code</p>
+            <hr class="divider">
+            <p>Point it at a funnel. Walk away. Come back to a folder of ads.</p>
+            <p>You give it a landing page URL. It reads the funnel, infers the avatar, selects ad formats from a curated swipe file, writes image briefs, runs every brief through a quality gate, and generates the images — all without you touching it.</p>
+            <p style="margin-bottom:0;">The lite version runs 4 legs and generates 5 images. No ad copy, no feed preview. That's the full version.</p>
+        </div>
+    </div>
+
+    <!-- What you get — the legs -->
+    <div class="card">
+        <div class="card-header"><h2>What it does while you're away</h2></div>
+        <div class="card-content">
+            <div class="leg-grid">
+                <div class="leg-item">
+                    <div class="leg-label">Leg 1 — Concept Selection</div>
+                    <div class="leg-text">Reads your funnel in full. Infers the avatar. Picks the 5 ad formats from the swipe file that best match this specific person and offer.</div>
+                </div>
+                <div class="leg-item">
+                    <div class="leg-label">Leg 2 — Image Briefs</div>
+                    <div class="leg-text">For each selected format, writes a hyper-specific image brief — the scene, the contradiction, what makes someone pause before reading a word.</div>
+                </div>
+                <div class="leg-item">
+                    <div class="leg-label">Leg 3 — Quality Gate</div>
+                    <div class="leg-text">Runs every brief through 3 gates: contradiction check, pause check, stock photo check. Anything that fails gets cut. Only what passes gets generated.</div>
+                </div>
+                <div class="leg-item">
+                    <div class="leg-label">Leg 4 — Image Generation</div>
+                    <div class="leg-text">Generates each approved image via fal.ai. Saves to your output folder. Logs every generation.</div>
+                </div>
+                <div class="leg-item locked">
+                    <div class="leg-label">Leg 5</div>
+                    <div class="leg-text">Writes Facebook ad copy for every image — primary text, headline, description. Never names the product. Sets up the click, not the sale.</div>
+                </div>
+                <div class="leg-item locked">
+                    <div class="leg-label">Leg 6</div>
+                    <div class="leg-text">Builds a Facebook feed preview HTML — all ads as realistic feed cards with See More toggle, engagement counts, and CTA buttons. Ready to screenshot and share.</div>
+                </div>
+            </div>
+            <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:0;">Each leg is a fresh Claude instance with clean context — no baggage from previous legs. That's why the output doesn't degrade. <a href="https://github.com/theprompted/ad-relay" style="color:var(--text-dark);font-weight:600;">Read more on GitHub →</a></p>
+        </div>
+    </div>
+
+    <!-- Requirements -->
+    <div class="card">
+        <div class="card-header"><h2>What you need</h2></div>
+        <div class="card-content">
+            <ul style="padding-left:1.25rem;margin-bottom:1rem;">
+                <li style="margin-bottom:0.4rem;"><strong>Claude Code</strong> — free to start at <a href="https://claude.ai/code" style="color:var(--text-dark);font-weight:600;">claude.ai/code</a></li>
+                <li style="margin-bottom:0.4rem;"><strong>Python 3.9+</strong> — for the image generation script</li>
+                <li style="margin-bottom:0.4rem;"><strong>fal.ai API key</strong> — get one free at <a href="https://fal.ai" style="color:var(--text-dark);font-weight:600;">fal.ai</a>. A 5-image run costs under $0.10.</li>
+            </ul>
+            <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:0;">Claude Code usage for legs 1–3 is covered by your Claude subscription. Only image generation (leg 4) uses fal.ai credits.</p>
+        </div>
+    </div>
+
+    <!-- Install -->
+    <div class="card">
+        <div class="card-header"><h2>How to install it</h2></div>
+        <div class="card-content">
+
+            <div class="step">
+                <div class="step-header">
+                    <span class="num-badge">1</span>
+                    <span class="step-title">Paste this into Claude Code</span>
+                </div>
+                <div class="code-block" onclick="copyText(this, 'Go read this repo and install all skills and dependencies: https://github.com/theprompted/ad-relay')">Go read this repo and install all skills and dependencies: https://github.com/theprompted/ad-relay<span class="copy-hint">click to copy</span></div>
+                <p style="font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem;margin-bottom:0;">Claude Code reads the repo, installs the skill, and installs the one Python dependency it needs. Ready in under a minute.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <span class="num-badge">2</span>
+                    <span class="step-title">Set your fal.ai key</span>
+                </div>
+                <div class="code-block" onclick="copyText(this, 'export FAL_KEY=your_key_here')">export FAL_KEY=your_key_here<span class="copy-hint">click to copy</span></div>
+                <p style="font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem;margin-bottom:0;">Get your key at <a href="https://fal.ai" style="color:var(--text-dark);">fal.ai</a>. Free to sign up.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <span class="num-badge">3</span>
+                    <span class="step-title">Run it on your funnel</span>
+                </div>
+                <div class="code-block" onclick="copyText(this, '/ad-relay-lite')">/ad-relay-lite<span class="copy-hint">click to copy</span></div>
+                <p style="font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem;margin-bottom:0;">Claude Code asks for your funnel URL, sets everything up, and kicks off the relay. Walk away. Come back in 5–10 minutes to a folder of 5 images.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Upgrade -->
+    <div class="upgrade-card">
+        <h2>Want the full version?</h2>
+        <p>The lite version runs 4 legs and generates 5 images from a 30-format swipe file. The full version adds:</p>
+        <ul class="upgrade-features">
+            <li>20 concepts from a 300+ format swipe file — more diversity, less predictable output</li>
+            <li>Ad copy for every image — primary text, headline, and description written to the funnel's angle</li>
+            <li>Facebook feed preview HTML — all ads as realistic feed cards, ready to screenshot and share</li>
+            <li>Multiple variations per concept — test different executions of the same angle</li>
+        </ul>
+        <p style="margin-bottom:1.5rem;">You can get access to the full version — along with everything else we ship — through our Syndicate.</p>
+        <a href="https://scale.theprompted.co" class="btn" target="_blank">Get full access →</a>
+    </div>
+
+    <div class="footer">
+        <p>Built by <a href="https://theprompted.co" target="_blank">The Prompted</a> &nbsp;·&nbsp; <a href="https://github.com/theprompted/ad-relay" target="_blank">GitHub</a></p>
+    </div>
+
+</div>
+
+<script>
+function copyText(el, text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const hint = el.querySelector('.copy-hint');
+        if (hint) { hint.textContent = '✓ copied'; }
+        setTimeout(() => { if (hint) hint.textContent = 'click to copy'; }, 2000);
+    });
+}
+</script>
+</body>
+</html>
