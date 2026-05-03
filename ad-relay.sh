@@ -20,12 +20,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RELAY_FILE="$SCRIPT_DIR/ad-relay.json"
+RELAY_FILE="$SCRIPT_DIR/relay.json"
 BATON_FILE="$SCRIPT_DIR/baton.txt"
 
 if [ ! -f "$RELAY_FILE" ]; then
-  echo "Error: ad-relay.json not found in $SCRIPT_DIR"
-  echo "Copy ad-relay.template.json to ad-relay.json and configure it before running."
+  echo "Error: relay.json not found in $SCRIPT_DIR"
+  echo "Copy relay.template.json to relay.json and configure it before running."
   exit 1
 fi
 
